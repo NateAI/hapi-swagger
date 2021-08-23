@@ -455,6 +455,10 @@ declare namespace hapiswagger {
      * A declaration of which security schemes are applied for the API as a whole. The list of values describes alternative security schemes that can be used (that is, there is a logical OR between the security requirements)
      */
     security?: [SecurityRequirementsType];
+
+    tsConfig?: any;
+    
+    includeFiles?: string[];
   }
 }
 
