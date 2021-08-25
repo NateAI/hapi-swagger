@@ -215,6 +215,12 @@ declare namespace hapiswagger {
     externalDocs?: ExternalDocumentation;
   }
 
+  interface TsDocSettings {
+    filesPattern: string;
+    tsConfig: any
+    symbolPattern: string;
+  }
+
   interface RegisterOptions {
     /**
      * The transfer protocol of the API ie `['http']`
@@ -456,9 +462,7 @@ declare namespace hapiswagger {
      */
     security?: [SecurityRequirementsType];
 
-    tsConfig?: any;
-    
-    includeFiles?: string[];
+    tsDocSettings?: TsDocSettings;
   }
 }
 

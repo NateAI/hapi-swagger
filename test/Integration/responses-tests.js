@@ -932,4 +932,73 @@ lab.experiment('responses', () => {
     const isValid = await Validate.test(response.result);
     expect(isValid).to.be.true();
   });
+
+  lab.test('ts json schema generator', async () => {
+    const routes = {
+      method: 'GET',
+      path: '/generated/',
+      options: {
+        handler: Helper.defaultHandler,
+        tags: ['api'],
+        plugins: {
+          'hapi-swagger': {
+            responses: {
+              '200': {
+                description: '',
+                schema: {
+                  $ref: '#/definitions/FooEndpointResponse'
+                }
+              }
+            }
+          }
+        }
+      }
+    };
+
+    const server = await Helper.createServer({
+      tsDocSettings: {
+        filesPattern: 'test/data/*.ts',
+        tsConfig: {
+          "compilerOptions": {
+            "rootDir": ".",
+            "baseUrl": ".",
+            "paths": {
+              "test/*": ["test/*"]
+            }
+          },
+          "include": ["test/**/*"], 
+          "exclude": ["node_modules"],
+        },
+        symbolPattern: 'EndpointResponse'
+      }
+    }, routes);
+    const response = await server.inject({ url: '/swagger.json' });
+    expect(response.result.paths).to.equal({
+      '/generated/': {
+        get: {
+          operationId: 'getGenerated',
+          tags: ['generated'],
+          responses: {
+            '200': {
+              description: 'Successful',
+              schema: {
+                $ref: '#/definitions/FooEndpointResponse'
+              }
+            }
+          }
+        }
+      }
+    });
+
+    expect(response.result.definitions).to.equal({
+      FooEndpointResponse: {
+        type: 'object',
+        properties: { bar: { type: 'string' } },
+        required: [ 'bar' ]
+      }
+    })
+
+    const isValid = await Validate.test(response.result);
+    expect(isValid).to.be.true();
+  });
 });
